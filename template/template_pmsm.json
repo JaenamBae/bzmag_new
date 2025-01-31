@@ -1,0 +1,2115 @@
+{
+    "file_type": "bzmag_template",
+    "version": 1.0,
+    "template": {
+        "name": "pmsm",
+        "configure": {
+            "[1] Natural Variables": {
+                "N_poles": {
+                    "constraints": [
+                        "$this % 2 == 0",
+                        "$this > 0"
+                    ],
+                    "description": "극수",
+                    "dtype": "int",
+                    "readonly": false,
+                    "unit": "-",
+                    "default_value": 8
+                },
+                "N_slots": {
+                    "constraints": [
+                        "$this % 3 == 0"
+                    ],
+                    "description": "슬롯수",
+                    "dtype": "int",
+                    "readonly": true,
+                    "unit": "-",
+                    "default_value": 12
+                }
+            },
+            "[2] Stator Geometry Variables": {
+                "R_so": {
+                    "description": "고정자 반경",
+                    "dtype": "float",
+                    "readonly": false,
+                    "unit": "mm",
+                    "default_value": 50,
+                    "image": "R_so.png"
+                },
+                "R_si": {
+                    "constraints": [
+                        "$this < $R_so"
+                    ],
+                    "description": "고정자 내반경",
+                    "dtype": "float",
+                    "readonly": false,
+                    "unit": "mm",
+                    "default_value": 30,
+                    "image": "R_si.png"
+                },
+                "d1": {
+                    "constraints": [
+                        "($this+$d2+$d3) < ($R_so-$R_si)"
+                    ],
+                    "description": "슈높이1",
+                    "dtype": "float",
+                    "readonly": false,
+                    "unit": "mm",
+                    "default_value": 1,
+                    "image": "d_1.png"
+                },
+                "d2": {
+                    "constraints": [
+                        "($d1+$this+$d3) < ($R_so-$R_si)"
+                    ],
+                    "description": "슈높이2",
+                    "dtype": "float",
+                    "readonly": false,
+                    "unit": "mm",
+                    "default_value": 1,
+                    "image": "d_2.png"
+                },
+                "d3": {
+                    "constraints": [
+                        "($d1+$d2+$this) < ($R_so-$R_si)"
+                    ],
+                    "description": "슬롯깊이",
+                    "dtype": "float",
+                    "readonly": false,
+                    "unit": "mm",
+                    "default_value": 13,
+                    "image": "d_3.png"
+                },
+                "W_so": {
+                    "description": "슬롯오프닝폭",
+                    "dtype": "float",
+                    "readonly": false,
+                    "unit": "mm",
+                    "default_value": 2.5,
+                    "image": "W_so.png"
+                },
+                "W_t": {
+                    "description": "치폭",
+                    "dtype": "float",
+                    "readonly": false,
+                    "unit": "mm",
+                    "default_value": 8,
+                    "image": "W_t.png"
+                }
+            },
+            "[3] Rotor Geometry Variables": {
+                "R_ro": {
+                    "description": "회전자 반경",
+                    "dtype": "float",
+                    "readonly": false,
+                    "unit": "mm",
+                    "default_value": 29.5,
+                    "image": "R_ro.png"
+                },
+                "T_m": {
+                    "description": "영구자석 자화방향 두께",
+                    "dtype": "float",
+                    "readonly": false,
+                    "unit": "mm",
+                    "default_value": 3,
+                    "image": "T_m.png"
+                },
+                "Alpha_m": {
+                    "description": "영구자석 자화방향 두께",
+                    "dtype": "float",
+                    "readonly": false,
+                    "unit": "-",
+                    "default_value": 0.75,
+                    "image": "Alpha_m.png"
+                },
+                "R_shaft": {
+                    "description": "샤프트 반경",
+                    "dtype": "float",
+                    "readonly": false,
+                    "unit": "mm",
+                    "default_value": 18,
+                    "image": "R_shaft.png"
+                }
+            },
+            "[4] Excitation": {
+                "I_a": {
+                    "description": "권선전류 (피크값)",
+                    "dtype": "float",
+                    "readonly": false,
+                    "unit": "A_peak",
+                    "default_value": 0
+                },
+                "beta": {
+                    "description": "전류위상각",
+                    "dtype": "float",
+                    "readonly": false,
+                    "unit": "radE",
+                    "default_value": 0
+                },
+                "N_c": {
+                    "description": "코일당 턴수",
+                    "dtype": "int",
+                    "readonly": false,
+                    "unit": "-",
+                    "default_value": 1
+                },
+                "a": {
+                    "description": "병렬회로수",
+                    "dtype": "int",
+                    "readonly": false,
+                    "unit": "-",
+                    "default_value": 1
+                }
+            },
+            "[5] Moving": {
+                "RotatingSpeed": {
+                    "description": "회전수",
+                    "dtype": "float",
+                    "readonly": false,
+                    "unit": "RPM",
+                    "default_value": 3600
+                }
+            }
+        }
+    },
+    "build": {
+        "expression": {
+            "children": [
+                {
+                    "Comment": "Stator Inner Radius + Shoe1",
+                    "Expression": "R_si + d1",
+                    "IsHidden": "false",
+                    "IsUserDefined": "true",
+                    "Key": "R_si1"
+                },
+                {
+                    "Comment": "Stator Inner Radius + Shoe1+2",
+                    "Expression": "R_si + d1 + d2",
+                    "IsHidden": "false",
+                    "IsUserDefined": "true",
+                    "Key": "R_si2"
+                },
+                {
+                    "Comment": "Angle for Half Shoe @ R_si1",
+                    "Expression": "_pi/N_slots - Theta_so1",
+                    "IsHidden": "false",
+                    "IsUserDefined": "true",
+                    "Key": "Theta_shoe1"
+                },
+                {
+                    "Comment": "Angle for Half Slot Open @ R_si1",
+                    "Expression": "asin((W_so)/(2*R_si1))",
+                    "IsHidden": "false",
+                    "IsUserDefined": "true",
+                    "Key": "Theta_so1"
+                },
+                {
+                    "Comment": "Angle for Half Tooth Width @ R_si2",
+                    "Expression": "asin((W_t)/(2*R_si2))",
+                    "IsHidden": "false",
+                    "IsUserDefined": "true",
+                    "Key": "Theta_tooth2"
+                },
+                {
+                    "Comment": "Rotor Back Yoke Width",
+                    "Expression": "(R_ro-R_shaft) - T_m",
+                    "IsHidden": "false",
+                    "IsUserDefined": "true",
+                    "Key": "W_ry"
+                },
+                {
+                    "Comment": "Stator Back Yoke Width",
+                    "Expression": "(R_so-R_si) - ds",
+                    "IsHidden": "false",
+                    "IsUserDefined": "true",
+                    "Key": "W_sy"
+                },
+                {
+                    "Comment": "beta Angle [degE]",
+                    "Expression": "0",
+                    "IsHidden": "false",
+                    "IsUserDefined": "true",
+                    "Key": "beta"
+                },
+                {
+                    "Comment": "Slot Depth",
+                    "Expression": "d1 + d2 + d3",
+                    "IsHidden": "false",
+                    "IsUserDefined": "true",
+                    "Key": "ds"
+                },
+                {
+                    "Comment": "Electric Frequency",
+                    "Expression": "RotatingSpeed/120*N_poles",
+                    "IsHidden": "false",
+                    "IsUserDefined": "true",
+                    "Key": "f_e"
+                },
+                {
+                    "Comment": "Airgap",
+                    "Expression": "(R_si - R_ro)",
+                    "IsHidden": "false",
+                    "IsUserDefined": "true",
+                    "Key": "g"
+                },
+                {
+                    "Comment": "Electric Angular Speed",
+                    "Expression": "2*_pi*f_e",
+                    "IsHidden": "false",
+                    "IsUserDefined": "true",
+                    "Key": "omega"
+                }
+            ]
+        },
+        "geometry": {
+            "children": [
+                {
+                    "name": "StatorExtend",
+                    "type": "GeomHeadNode",
+                    "Color": "230, 230, 230, 230",
+                    "CoordinateSystem": "/coordinate_system/global",
+                    "IsHide": "false",
+                    "IsModel": "true",
+                    "IsStandAlone": "true",
+                    "Material": "/material/vaccume",
+                    "RequiredNumberOfElements": "0",
+                    "num_children": "1",
+                    "children": [
+                        {
+                            "name": "Circle",
+                            "type": "GeomCircleNode",
+                            "Center": "0,0",
+                            "Radius": "R_so * 1.25",
+                            "Segments": "0",
+                            "CoordinateSystem": "/coordinate_system/global",
+                            "num_children": "1",
+                            "children": [
+                                {
+                                    "name": "Cover",
+                                    "type": "GeomCoverLineNode",
+                                    "num_children": "1",
+                                    "children": [
+                                        {
+                                            "name": "Subtract",
+                                            "type": "GeomSubtractNode",
+                                            "num_children": "2",
+                                            "children": [
+                                                {
+                                                    "name": "StatorExtend_in",
+                                                    "type": "GeomHeadNode",
+                                                    "Color": "230, 230, 230, 230",
+                                                    "CoordinateSystem": "/coordinate_system/global",
+                                                    "IsHide": "false",
+                                                    "IsModel": "true",
+                                                    "IsStandAlone": "false",
+                                                    "Material": "/material/vaccume",
+                                                    "RequiredNumberOfElements": "0",
+                                                    "num_children": "1",
+                                                    "children": [
+                                                        {
+                                                            "name": "CloneFrom",
+                                                            "type": "GeomCloneFromNode",
+                                                            "CloneFrom": "/geometry/Stator/Circle/Cover/CloneTo",
+                                                            "CoordinateSystem": "/coordinate_system/global",
+                                                            "num_children": "0"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "name": "Spilt",
+                                                    "type": "GeomSplitNode",
+                                                    "CoordinateSystem": "/coordinate_system/global",
+                                                    "KeepPositive": "true",
+                                                    "Plane": "SPILT_ZX",
+                                                    "num_children": "1",
+                                                    "children": [
+                                                        {
+                                                            "name": "Spilt",
+                                                            "type": "GeomSplitNode",
+                                                            "CoordinateSystem": "/coordinate_system/CS_CutModel",
+                                                            "KeepPositive": "false",
+                                                            "Plane": "SPILT_ZX",
+                                                            "num_children": "0"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Stator",
+                    "type": "GeomHeadNode",
+                    "Color": "230, 230, 230, 230",
+                    "CoordinateSystem": "/coordinate_system/global",
+                    "IsHide": "false",
+                    "IsModel": "true",
+                    "IsStandAlone": "true",
+                    "Material": "/material/35PN270",
+                    "RequiredNumberOfElements": "0",
+                    "num_children": "1",
+                    "children": [
+                        {
+                            "name": "Circle",
+                            "type": "GeomCircleNode",
+                            "Center": "0,0",
+                            "Radius": "R_so",
+                            "Segments": "0",
+                            "CoordinateSystem": "/coordinate_system/global",
+                            "num_children": "1",
+                            "children": [
+                                {
+                                    "name": "Cover",
+                                    "type": "GeomCoverLineNode",
+                                    "num_children": "2",
+                                    "children": [
+                                        {
+                                            "name": "CloneTo",
+                                            "type": "GeomCloneToNode",
+                                            "num_children": "0"
+                                        },
+                                        {
+                                            "name": "Subtract",
+                                            "type": "GeomSubtractNode",
+                                            "num_children": "2",
+                                            "children": [
+                                                {
+                                                    "name": "Stator_bore",
+                                                    "type": "GeomHeadNode",
+                                                    "Color": "230, 230, 230, 230",
+                                                    "CoordinateSystem": "/coordinate_system/global",
+                                                    "IsHide": "false",
+                                                    "IsModel": "true",
+                                                    "IsStandAlone": "false",
+                                                    "Material": "/material/vaccume",
+                                                    "RequiredNumberOfElements": "0",
+                                                    "num_children": "1",
+                                                    "children": [
+                                                        {
+                                                            "name": "Circle",
+                                                            "type": "GeomCircleNode",
+                                                            "Center": "0,0",
+                                                            "Radius": "R_so - W_sy",
+                                                            "Segments": "0",
+                                                            "CoordinateSystem": "/coordinate_system/global",
+                                                            "num_children": "1",
+                                                            "children": [
+                                                                {
+                                                                    "name": "Cover",
+                                                                    "type": "GeomCoverLineNode",
+                                                                    "num_children": "0"
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "name": "Unite",
+                                                    "type": "GeomUniteNode",
+                                                    "num_children": "13",
+                                                    "children": [
+                                                        {
+                                                            "name": "Tooth_1",
+                                                            "type": "GeomHeadNode",
+                                                            "Color": "230, 230, 230, 230",
+                                                            "CoordinateSystem": "/coordinate_system/global",
+                                                            "IsHide": "false",
+                                                            "IsModel": "true",
+                                                            "IsStandAlone": "false",
+                                                            "Material": "/material/vaccume",
+                                                            "RequiredNumberOfElements": "0",
+                                                            "num_children": "1",
+                                                            "children": [
+                                                                {
+                                                                    "name": "CloneFrom",
+                                                                    "type": "GeomCloneFromNode",
+                                                                    "CloneFrom": "/geometry/Stator/Circle/Cover/Subtract/Unite/Tooth/Rectangle/Cover/Subtract/Unite/CloneTo",
+                                                                    "CoordinateSystem": "/coordinate_system/global",
+                                                                    "num_children": "1",
+                                                                    "children": [
+                                                                        {
+                                                                            "name": "Rotate",
+                                                                            "type": "GeomRotateNode",
+                                                                            "Angle": "2*_pi/N_slots * 1",
+                                                                            "CoordinateSystem": "/coordinate_system/global",
+                                                                            "num_children": "0"
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "name": "Tooth_2",
+                                                            "type": "GeomHeadNode",
+                                                            "Color": "230, 230, 230, 230",
+                                                            "CoordinateSystem": "/coordinate_system/global",
+                                                            "IsHide": "false",
+                                                            "IsModel": "true",
+                                                            "IsStandAlone": "false",
+                                                            "Material": "/material/vaccume",
+                                                            "RequiredNumberOfElements": "0",
+                                                            "num_children": "1",
+                                                            "children": [
+                                                                {
+                                                                    "name": "CloneFrom",
+                                                                    "type": "GeomCloneFromNode",
+                                                                    "CloneFrom": "/geometry/Stator/Circle/Cover/Subtract/Unite/Tooth/Rectangle/Cover/Subtract/Unite/CloneTo",
+                                                                    "CoordinateSystem": "/coordinate_system/global",
+                                                                    "num_children": "1",
+                                                                    "children": [
+                                                                        {
+                                                                            "name": "Rotate",
+                                                                            "type": "GeomRotateNode",
+                                                                            "Angle": "2*_pi/N_slots * 2",
+                                                                            "CoordinateSystem": "/coordinate_system/global",
+                                                                            "num_children": "0"
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "name": "Tooth_3",
+                                                            "type": "GeomHeadNode",
+                                                            "Color": "230, 230, 230, 230",
+                                                            "CoordinateSystem": "/coordinate_system/global",
+                                                            "IsHide": "false",
+                                                            "IsModel": "true",
+                                                            "IsStandAlone": "false",
+                                                            "Material": "/material/vaccume",
+                                                            "RequiredNumberOfElements": "0",
+                                                            "num_children": "1",
+                                                            "children": [
+                                                                {
+                                                                    "name": "CloneFrom",
+                                                                    "type": "GeomCloneFromNode",
+                                                                    "CloneFrom": "/geometry/Stator/Circle/Cover/Subtract/Unite/Tooth/Rectangle/Cover/Subtract/Unite/CloneTo",
+                                                                    "CoordinateSystem": "/coordinate_system/global",
+                                                                    "num_children": "1",
+                                                                    "children": [
+                                                                        {
+                                                                            "name": "Rotate",
+                                                                            "type": "GeomRotateNode",
+                                                                            "Angle": "2*_pi/N_slots * 3",
+                                                                            "CoordinateSystem": "/coordinate_system/global",
+                                                                            "num_children": "0"
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "name": "Tooth_4",
+                                                            "type": "GeomHeadNode",
+                                                            "Color": "230, 230, 230, 230",
+                                                            "CoordinateSystem": "/coordinate_system/global",
+                                                            "IsHide": "false",
+                                                            "IsModel": "true",
+                                                            "IsStandAlone": "false",
+                                                            "Material": "/material/vaccume",
+                                                            "RequiredNumberOfElements": "0",
+                                                            "num_children": "1",
+                                                            "children": [
+                                                                {
+                                                                    "name": "CloneFrom",
+                                                                    "type": "GeomCloneFromNode",
+                                                                    "CloneFrom": "/geometry/Stator/Circle/Cover/Subtract/Unite/Tooth/Rectangle/Cover/Subtract/Unite/CloneTo",
+                                                                    "CoordinateSystem": "/coordinate_system/global",
+                                                                    "num_children": "1",
+                                                                    "children": [
+                                                                        {
+                                                                            "name": "Rotate",
+                                                                            "type": "GeomRotateNode",
+                                                                            "Angle": "2*_pi/N_slots * 4",
+                                                                            "CoordinateSystem": "/coordinate_system/global",
+                                                                            "num_children": "0"
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "name": "Tooth_5",
+                                                            "type": "GeomHeadNode",
+                                                            "Color": "230, 230, 230, 230",
+                                                            "CoordinateSystem": "/coordinate_system/global",
+                                                            "IsHide": "false",
+                                                            "IsModel": "true",
+                                                            "IsStandAlone": "false",
+                                                            "Material": "/material/vaccume",
+                                                            "RequiredNumberOfElements": "0",
+                                                            "num_children": "1",
+                                                            "children": [
+                                                                {
+                                                                    "name": "CloneFrom",
+                                                                    "type": "GeomCloneFromNode",
+                                                                    "CloneFrom": "/geometry/Stator/Circle/Cover/Subtract/Unite/Tooth/Rectangle/Cover/Subtract/Unite/CloneTo",
+                                                                    "CoordinateSystem": "/coordinate_system/global",
+                                                                    "num_children": "1",
+                                                                    "children": [
+                                                                        {
+                                                                            "name": "Rotate",
+                                                                            "type": "GeomRotateNode",
+                                                                            "Angle": "2*_pi/N_slots * 5",
+                                                                            "CoordinateSystem": "/coordinate_system/global",
+                                                                            "num_children": "0"
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "name": "Tooth_6",
+                                                            "type": "GeomHeadNode",
+                                                            "Color": "230, 230, 230, 230",
+                                                            "CoordinateSystem": "/coordinate_system/global",
+                                                            "IsHide": "false",
+                                                            "IsModel": "true",
+                                                            "IsStandAlone": "false",
+                                                            "Material": "/material/vaccume",
+                                                            "RequiredNumberOfElements": "0",
+                                                            "num_children": "1",
+                                                            "children": [
+                                                                {
+                                                                    "name": "CloneFrom",
+                                                                    "type": "GeomCloneFromNode",
+                                                                    "CloneFrom": "/geometry/Stator/Circle/Cover/Subtract/Unite/Tooth/Rectangle/Cover/Subtract/Unite/CloneTo",
+                                                                    "CoordinateSystem": "/coordinate_system/global",
+                                                                    "num_children": "1",
+                                                                    "children": [
+                                                                        {
+                                                                            "name": "Rotate",
+                                                                            "type": "GeomRotateNode",
+                                                                            "Angle": "2*_pi/N_slots * 6",
+                                                                            "CoordinateSystem": "/coordinate_system/global",
+                                                                            "num_children": "0"
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "name": "Tooth_7",
+                                                            "type": "GeomHeadNode",
+                                                            "Color": "230, 230, 230, 230",
+                                                            "CoordinateSystem": "/coordinate_system/global",
+                                                            "IsHide": "false",
+                                                            "IsModel": "true",
+                                                            "IsStandAlone": "false",
+                                                            "Material": "/material/vaccume",
+                                                            "RequiredNumberOfElements": "0",
+                                                            "num_children": "1",
+                                                            "children": [
+                                                                {
+                                                                    "name": "CloneFrom",
+                                                                    "type": "GeomCloneFromNode",
+                                                                    "CloneFrom": "/geometry/Stator/Circle/Cover/Subtract/Unite/Tooth/Rectangle/Cover/Subtract/Unite/CloneTo",
+                                                                    "CoordinateSystem": "/coordinate_system/global",
+                                                                    "num_children": "1",
+                                                                    "children": [
+                                                                        {
+                                                                            "name": "Rotate",
+                                                                            "type": "GeomRotateNode",
+                                                                            "Angle": "2*_pi/N_slots * 7",
+                                                                            "CoordinateSystem": "/coordinate_system/global",
+                                                                            "num_children": "0"
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "name": "Tooth_8",
+                                                            "type": "GeomHeadNode",
+                                                            "Color": "230, 230, 230, 230",
+                                                            "CoordinateSystem": "/coordinate_system/global",
+                                                            "IsHide": "false",
+                                                            "IsModel": "true",
+                                                            "IsStandAlone": "false",
+                                                            "Material": "/material/vaccume",
+                                                            "RequiredNumberOfElements": "0",
+                                                            "num_children": "1",
+                                                            "children": [
+                                                                {
+                                                                    "name": "CloneFrom",
+                                                                    "type": "GeomCloneFromNode",
+                                                                    "CloneFrom": "/geometry/Stator/Circle/Cover/Subtract/Unite/Tooth/Rectangle/Cover/Subtract/Unite/CloneTo",
+                                                                    "CoordinateSystem": "/coordinate_system/global",
+                                                                    "num_children": "1",
+                                                                    "children": [
+                                                                        {
+                                                                            "name": "Rotate",
+                                                                            "type": "GeomRotateNode",
+                                                                            "Angle": "2*_pi/N_slots * 8",
+                                                                            "CoordinateSystem": "/coordinate_system/global",
+                                                                            "num_children": "0"
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "name": "Tooth_9",
+                                                            "type": "GeomHeadNode",
+                                                            "Color": "230, 230, 230, 230",
+                                                            "CoordinateSystem": "/coordinate_system/global",
+                                                            "IsHide": "false",
+                                                            "IsModel": "true",
+                                                            "IsStandAlone": "false",
+                                                            "Material": "/material/vaccume",
+                                                            "RequiredNumberOfElements": "0",
+                                                            "num_children": "1",
+                                                            "children": [
+                                                                {
+                                                                    "name": "CloneFrom",
+                                                                    "type": "GeomCloneFromNode",
+                                                                    "CloneFrom": "/geometry/Stator/Circle/Cover/Subtract/Unite/Tooth/Rectangle/Cover/Subtract/Unite/CloneTo",
+                                                                    "CoordinateSystem": "/coordinate_system/global",
+                                                                    "num_children": "1",
+                                                                    "children": [
+                                                                        {
+                                                                            "name": "Rotate",
+                                                                            "type": "GeomRotateNode",
+                                                                            "Angle": "2*_pi/N_slots * 9",
+                                                                            "CoordinateSystem": "/coordinate_system/global",
+                                                                            "num_children": "0"
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "name": "Tooth_10",
+                                                            "type": "GeomHeadNode",
+                                                            "Color": "230, 230, 230, 230",
+                                                            "CoordinateSystem": "/coordinate_system/global",
+                                                            "IsHide": "false",
+                                                            "IsModel": "true",
+                                                            "IsStandAlone": "false",
+                                                            "Material": "/material/vaccume",
+                                                            "RequiredNumberOfElements": "0",
+                                                            "num_children": "1",
+                                                            "children": [
+                                                                {
+                                                                    "name": "CloneFrom",
+                                                                    "type": "GeomCloneFromNode",
+                                                                    "CloneFrom": "/geometry/Stator/Circle/Cover/Subtract/Unite/Tooth/Rectangle/Cover/Subtract/Unite/CloneTo",
+                                                                    "CoordinateSystem": "/coordinate_system/global",
+                                                                    "num_children": "1",
+                                                                    "children": [
+                                                                        {
+                                                                            "name": "Rotate",
+                                                                            "type": "GeomRotateNode",
+                                                                            "Angle": "2*_pi/N_slots * 10",
+                                                                            "CoordinateSystem": "/coordinate_system/global",
+                                                                            "num_children": "0"
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "name": "Tooth_11",
+                                                            "type": "GeomHeadNode",
+                                                            "Color": "230, 230, 230, 230",
+                                                            "CoordinateSystem": "/coordinate_system/global",
+                                                            "IsHide": "false",
+                                                            "IsModel": "true",
+                                                            "IsStandAlone": "false",
+                                                            "Material": "/material/vaccume",
+                                                            "RequiredNumberOfElements": "0",
+                                                            "num_children": "1",
+                                                            "children": [
+                                                                {
+                                                                    "name": "CloneFrom",
+                                                                    "type": "GeomCloneFromNode",
+                                                                    "CloneFrom": "/geometry/Stator/Circle/Cover/Subtract/Unite/Tooth/Rectangle/Cover/Subtract/Unite/CloneTo",
+                                                                    "CoordinateSystem": "/coordinate_system/global",
+                                                                    "num_children": "1",
+                                                                    "children": [
+                                                                        {
+                                                                            "name": "Rotate",
+                                                                            "type": "GeomRotateNode",
+                                                                            "Angle": "2*_pi/N_slots * 11",
+                                                                            "CoordinateSystem": "/coordinate_system/global",
+                                                                            "num_children": "0"
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "name": "Tooth",
+                                                            "type": "GeomHeadNode",
+                                                            "Color": "230, 230, 230, 230",
+                                                            "CoordinateSystem": "/coordinate_system/global",
+                                                            "IsHide": "false",
+                                                            "IsModel": "true",
+                                                            "IsStandAlone": "false",
+                                                            "Material": "/material/vaccume",
+                                                            "RequiredNumberOfElements": "0",
+                                                            "num_children": "1",
+                                                            "children": [
+                                                                {
+                                                                    "name": "Rectangle",
+                                                                    "type": "GeomRectNode",
+                                                                    "Height": "W_t",
+                                                                    "Point": "0, -W_t/2",
+                                                                    "Width": "R_so-W_sy/2",
+                                                                    "CoordinateSystem": "/coordinate_system/global",
+                                                                    "num_children": "1",
+                                                                    "children": [
+                                                                        {
+                                                                            "name": "Cover",
+                                                                            "type": "GeomCoverLineNode",
+                                                                            "num_children": "1",
+                                                                            "children": [
+                                                                                {
+                                                                                    "name": "Subtract",
+                                                                                    "type": "GeomSubtractNode",
+                                                                                    "num_children": "2",
+                                                                                    "children": [
+                                                                                        {
+                                                                                            "name": "StatorInner",
+                                                                                            "type": "GeomHeadNode",
+                                                                                            "Color": "230, 230, 230, 230",
+                                                                                            "CoordinateSystem": "/coordinate_system/global",
+                                                                                            "IsHide": "false",
+                                                                                            "IsModel": "true",
+                                                                                            "IsStandAlone": "false",
+                                                                                            "Material": "/material/vaccume",
+                                                                                            "RequiredNumberOfElements": "0",
+                                                                                            "num_children": "1",
+                                                                                            "children": [
+                                                                                                {
+                                                                                                    "name": "Circle",
+                                                                                                    "type": "GeomCircleNode",
+                                                                                                    "Center": "0,0",
+                                                                                                    "Radius": "R_si",
+                                                                                                    "Segments": "0",
+                                                                                                    "CoordinateSystem": "/coordinate_system/global",
+                                                                                                    "num_children": "1",
+                                                                                                    "children": [
+                                                                                                        {
+                                                                                                            "name": "Cover",
+                                                                                                            "type": "GeomCoverLineNode",
+                                                                                                            "num_children": "1",
+                                                                                                            "children": [
+                                                                                                                {
+                                                                                                                    "name": "CloneTo",
+                                                                                                                    "type": "GeomCloneToNode",
+                                                                                                                    "num_children": "0"
+                                                                                                                }
+                                                                                                            ]
+                                                                                                        }
+                                                                                                    ]
+                                                                                                }
+                                                                                            ]
+                                                                                        },
+                                                                                        {
+                                                                                            "name": "Unite",
+                                                                                            "type": "GeomUniteNode",
+                                                                                            "num_children": "3",
+                                                                                            "children": [
+                                                                                                {
+                                                                                                    "name": "ShoeMiddle",
+                                                                                                    "type": "GeomHeadNode",
+                                                                                                    "Color": "230, 230, 230, 230",
+                                                                                                    "CoordinateSystem": "/coordinate_system/global",
+                                                                                                    "IsHide": "false",
+                                                                                                    "IsModel": "true",
+                                                                                                    "IsStandAlone": "false",
+                                                                                                    "Material": "/material/vaccume",
+                                                                                                    "RequiredNumberOfElements": "0",
+                                                                                                    "num_children": "1",
+                                                                                                    "children": [
+                                                                                                        {
+                                                                                                            "name": "Circle",
+                                                                                                            "type": "GeomCircleNode",
+                                                                                                            "Center": "0,0",
+                                                                                                            "Radius": "R_si+d1",
+                                                                                                            "Segments": "0",
+                                                                                                            "CoordinateSystem": "/coordinate_system/global",
+                                                                                                            "num_children": "1",
+                                                                                                            "children": [
+                                                                                                                {
+                                                                                                                    "name": "Cover",
+                                                                                                                    "type": "GeomCoverLineNode",
+                                                                                                                    "num_children": "2",
+                                                                                                                    "children": [
+                                                                                                                        {
+                                                                                                                            "name": "CloneTo",
+                                                                                                                            "type": "GeomCloneToNode",
+                                                                                                                            "num_children": "0"
+                                                                                                                        },
+                                                                                                                        {
+                                                                                                                            "name": "Subtract",
+                                                                                                                            "type": "GeomSubtractNode",
+                                                                                                                            "num_children": "2",
+                                                                                                                            "children": [
+                                                                                                                                {
+                                                                                                                                    "name": "ShoeInner",
+                                                                                                                                    "type": "GeomHeadNode",
+                                                                                                                                    "Color": "230, 230, 230, 230",
+                                                                                                                                    "CoordinateSystem": "/coordinate_system/global",
+                                                                                                                                    "IsHide": "false",
+                                                                                                                                    "IsModel": "true",
+                                                                                                                                    "IsStandAlone": "false",
+                                                                                                                                    "Material": "/material/vaccume",
+                                                                                                                                    "RequiredNumberOfElements": "0",
+                                                                                                                                    "num_children": "1",
+                                                                                                                                    "children": [
+                                                                                                                                        {
+                                                                                                                                            "name": "CloneFrom",
+                                                                                                                                            "type": "GeomCloneFromNode",
+                                                                                                                                            "CloneFrom": "/geometry/Stator/Circle/Cover/Subtract/Unite/Tooth/Rectangle/Cover/Subtract/StatorInner/Circle/Cover/CloneTo",
+                                                                                                                                            "CoordinateSystem": "/coordinate_system/global",
+                                                                                                                                            "num_children": "0"
+                                                                                                                                        }
+                                                                                                                                    ]
+                                                                                                                                },
+                                                                                                                                {
+                                                                                                                                    "name": "Spilt",
+                                                                                                                                    "type": "GeomSplitNode",
+                                                                                                                                    "CoordinateSystem": "/coordinate_system/CS_HalfSlotPitch_Negative/CS_CutShoeN",
+                                                                                                                                    "KeepPositive": "true",
+                                                                                                                                    "Plane": "SPILT_ZX",
+                                                                                                                                    "num_children": "1",
+                                                                                                                                    "children": [
+                                                                                                                                        {
+                                                                                                                                            "name": "Spilt",
+                                                                                                                                            "type": "GeomSplitNode",
+                                                                                                                                            "CoordinateSystem": "/coordinate_system/CS_HalfSlotPitch_Positive/CS_CutShoeP",
+                                                                                                                                            "KeepPositive": "false",
+                                                                                                                                            "Plane": "SPILT_ZX",
+                                                                                                                                            "num_children": "0"
+                                                                                                                                        }
+                                                                                                                                    ]
+                                                                                                                                }
+                                                                                                                            ]
+                                                                                                                        }
+                                                                                                                    ]
+                                                                                                                }
+                                                                                                            ]
+                                                                                                        }
+                                                                                                    ]
+                                                                                                },
+                                                                                                {
+                                                                                                    "name": "ShoeTop",
+                                                                                                    "type": "GeomHeadNode",
+                                                                                                    "Color": "230, 230, 230, 230",
+                                                                                                    "CoordinateSystem": "/coordinate_system/global",
+                                                                                                    "IsHide": "false",
+                                                                                                    "IsModel": "true",
+                                                                                                    "IsStandAlone": "false",
+                                                                                                    "Material": "/material/vaccume",
+                                                                                                    "RequiredNumberOfElements": "0",
+                                                                                                    "num_children": "1",
+                                                                                                    "children": [
+                                                                                                        {
+                                                                                                            "name": "Circle",
+                                                                                                            "type": "GeomCircleNode",
+                                                                                                            "Center": "0,0",
+                                                                                                            "Radius": "R_si+d1+d2",
+                                                                                                            "Segments": "0",
+                                                                                                            "CoordinateSystem": "/coordinate_system/global",
+                                                                                                            "num_children": "1",
+                                                                                                            "children": [
+                                                                                                                {
+                                                                                                                    "name": "Cover",
+                                                                                                                    "type": "GeomCoverLineNode",
+                                                                                                                    "num_children": "1",
+                                                                                                                    "children": [
+                                                                                                                        {
+                                                                                                                            "name": "Subtract",
+                                                                                                                            "type": "GeomSubtractNode",
+                                                                                                                            "num_children": "2",
+                                                                                                                            "children": [
+                                                                                                                                {
+                                                                                                                                    "name": "ShoeMiddle_1",
+                                                                                                                                    "type": "GeomHeadNode",
+                                                                                                                                    "Color": "230, 230, 230, 230",
+                                                                                                                                    "CoordinateSystem": "/coordinate_system/global",
+                                                                                                                                    "IsHide": "false",
+                                                                                                                                    "IsModel": "true",
+                                                                                                                                    "IsStandAlone": "false",
+                                                                                                                                    "Material": "/material/vaccume",
+                                                                                                                                    "RequiredNumberOfElements": "0",
+                                                                                                                                    "num_children": "1",
+                                                                                                                                    "children": [
+                                                                                                                                        {
+                                                                                                                                            "name": "CloneFrom",
+                                                                                                                                            "type": "GeomCloneFromNode",
+                                                                                                                                            "CloneFrom": "/geometry/Stator/Circle/Cover/Subtract/Unite/Tooth/Rectangle/Cover/Subtract/Unite/ShoeMiddle/Circle/Cover/CloneTo",
+                                                                                                                                            "CoordinateSystem": "/coordinate_system/global",
+                                                                                                                                            "num_children": "0"
+                                                                                                                                        }
+                                                                                                                                    ]
+                                                                                                                                },
+                                                                                                                                {
+                                                                                                                                    "name": "Spilt",
+                                                                                                                                    "type": "GeomSplitNode",
+                                                                                                                                    "CoordinateSystem": "/coordinate_system/CS_HalfSlotPitch_Negative/CS_CutShoeN",
+                                                                                                                                    "KeepPositive": "true",
+                                                                                                                                    "Plane": "SPILT_ZX",
+                                                                                                                                    "num_children": "1",
+                                                                                                                                    "children": [
+                                                                                                                                        {
+                                                                                                                                            "name": "Spilt",
+                                                                                                                                            "type": "GeomSplitNode",
+                                                                                                                                            "CoordinateSystem": "/coordinate_system/CS_HalfSlotPitch_Positive/CS_CutShoeP",
+                                                                                                                                            "KeepPositive": "false",
+                                                                                                                                            "Plane": "SPILT_ZX",
+                                                                                                                                            "num_children": "0"
+                                                                                                                                        }
+                                                                                                                                    ]
+                                                                                                                                }
+                                                                                                                            ]
+                                                                                                                        }
+                                                                                                                    ]
+                                                                                                                }
+                                                                                                            ]
+                                                                                                        }
+                                                                                                    ]
+                                                                                                },
+                                                                                                {
+                                                                                                    "name": "CloneTo",
+                                                                                                    "type": "GeomCloneToNode",
+                                                                                                    "num_children": "0"
+                                                                                                }
+                                                                                            ]
+                                                                                        }
+                                                                                    ]
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "name": "Spilt",
+                                                            "type": "GeomSplitNode",
+                                                            "CoordinateSystem": "/coordinate_system/global",
+                                                            "KeepPositive": "true",
+                                                            "Plane": "SPILT_ZX",
+                                                            "num_children": "1",
+                                                            "children": [
+                                                                {
+                                                                    "name": "Spilt",
+                                                                    "type": "GeomSplitNode",
+                                                                    "CoordinateSystem": "/coordinate_system/CS_CutModel",
+                                                                    "KeepPositive": "false",
+                                                                    "Plane": "SPILT_ZX",
+                                                                    "num_children": "0"
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "AirStator",
+                    "type": "GeomHeadNode",
+                    "Color": "230, 230, 230, 230",
+                    "CoordinateSystem": "/coordinate_system/global",
+                    "IsHide": "false",
+                    "IsModel": "true",
+                    "IsStandAlone": "true",
+                    "Material": "/material/vaccume",
+                    "RequiredNumberOfElements": "0",
+                    "num_children": "1",
+                    "children": [
+                        {
+                            "name": "CloneFrom",
+                            "type": "GeomCloneFromNode",
+                            "CloneFrom": "/geometry/Stator/Circle/Cover/CloneTo",
+                            "CoordinateSystem": "/coordinate_system/global",
+                            "num_children": "1",
+                            "children": [
+                                {
+                                    "name": "Subtract",
+                                    "type": "GeomSubtractNode",
+                                    "num_children": "2",
+                                    "children": [
+                                        {
+                                            "name": "AirStatorInner",
+                                            "type": "GeomHeadNode",
+                                            "Color": "230, 230, 230, 230",
+                                            "CoordinateSystem": "/coordinate_system/global",
+                                            "IsHide": "false",
+                                            "IsModel": "true",
+                                            "IsStandAlone": "false",
+                                            "Material": "/material/vaccume",
+                                            "RequiredNumberOfElements": "0",
+                                            "num_children": "1",
+                                            "children": [
+                                                {
+                                                    "name": "CloneFrom",
+                                                    "type": "GeomCloneFromNode",
+                                                    "CloneFrom": "/geometry/Stator/Circle/Cover/Subtract/Unite/Tooth/Rectangle/Cover/Subtract/StatorInner/Circle/Cover/CloneTo",
+                                                    "CoordinateSystem": "/coordinate_system/global",
+                                                    "num_children": "0"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "name": "Spilt",
+                                            "type": "GeomSplitNode",
+                                            "CoordinateSystem": "/coordinate_system/global",
+                                            "KeepPositive": "true",
+                                            "Plane": "SPILT_ZX",
+                                            "num_children": "1",
+                                            "children": [
+                                                {
+                                                    "name": "Spilt",
+                                                    "type": "GeomSplitNode",
+                                                    "CoordinateSystem": "/coordinate_system/CS_CutModel",
+                                                    "KeepPositive": "false",
+                                                    "Plane": "SPILT_ZX",
+                                                    "num_children": "0"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "SlotL",
+                    "type": "GeomHeadNode",
+                    "Color": "255, 170, 0, 255",
+                    "CoordinateSystem": "/coordinate_system/global",
+                    "IsHide": "false",
+                    "IsModel": "true",
+                    "IsStandAlone": "true",
+                    "Material": "/material/copper",
+                    "RequiredNumberOfElements": "0",
+                    "num_children": "1",
+                    "children": [
+                        {
+                            "name": "Circle",
+                            "type": "GeomCircleNode",
+                            "Center": "0,0",
+                            "Radius": "R_si+d1+d2+d3",
+                            "Segments": "0",
+                            "CoordinateSystem": "/coordinate_system/global",
+                            "num_children": "1",
+                            "children": [
+                                {
+                                    "name": "Cover",
+                                    "type": "GeomCoverLineNode",
+                                    "num_children": "1",
+                                    "children": [
+                                        {
+                                            "name": "Subtract",
+                                            "type": "GeomSubtractNode",
+                                            "num_children": "2",
+                                            "children": [
+                                                {
+                                                    "name": "Slot_in",
+                                                    "type": "GeomHeadNode",
+                                                    "Color": "230, 230, 230, 230",
+                                                    "CoordinateSystem": "/coordinate_system/global",
+                                                    "IsHide": "false",
+                                                    "IsModel": "true",
+                                                    "IsStandAlone": "false",
+                                                    "Material": "/material/vaccume",
+                                                    "RequiredNumberOfElements": "0",
+                                                    "num_children": "1",
+                                                    "children": [
+                                                        {
+                                                            "name": "Circle",
+                                                            "type": "GeomCircleNode",
+                                                            "Center": "0,0",
+                                                            "Radius": "R_si+d1+d2+2",
+                                                            "Segments": "0",
+                                                            "CoordinateSystem": "/coordinate_system/global",
+                                                            "num_children": "1",
+                                                            "children": [
+                                                                {
+                                                                    "name": "Cover",
+                                                                    "type": "GeomCoverLineNode",
+                                                                    "num_children": "0"
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "name": "Spilt",
+                                                    "type": "GeomSplitNode",
+                                                    "CoordinateSystem": "/coordinate_system/CS_CutSlotR",
+                                                    "KeepPositive": "true",
+                                                    "Plane": "SPILT_ZX",
+                                                    "num_children": "1",
+                                                    "children": [
+                                                        {
+                                                            "name": "Spilt",
+                                                            "type": "GeomSplitNode",
+                                                            "CoordinateSystem": "/coordinate_system/CS_CutSlotLBase/CS_CutSlotL",
+                                                            "KeepPositive": "false",
+                                                            "Plane": "SPILT_ZX",
+                                                            "num_children": "2",
+                                                            "children": [
+                                                                {
+                                                                    "name": "CloneTo",
+                                                                    "type": "GeomCloneToNode",
+                                                                    "num_children": "0"
+                                                                },
+                                                                {
+                                                                    "name": "Spilt",
+                                                                    "type": "GeomSplitNode",
+                                                                    "CoordinateSystem": "/coordinate_system/CS_HalfSlotPitch_Positive",
+                                                                    "KeepPositive": "true",
+                                                                    "Plane": "SPILT_ZX",
+                                                                    "num_children": "1",
+                                                                    "children": [
+                                                                        {
+                                                                            "name": "CloneTo",
+                                                                            "type": "GeomCloneToNode",
+                                                                            "num_children": "0"
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "SlotR",
+                    "type": "GeomHeadNode",
+                    "Color": "255, 170, 0, 255",
+                    "CoordinateSystem": "/coordinate_system/global",
+                    "IsHide": "false",
+                    "IsModel": "true",
+                    "IsStandAlone": "true",
+                    "Material": "/material/copper",
+                    "RequiredNumberOfElements": "0",
+                    "num_children": "1",
+                    "children": [
+                        {
+                            "name": "CloneFrom",
+                            "type": "GeomCloneFromNode",
+                            "CloneFrom": "/geometry/SlotL/Circle/Cover/Subtract/Spilt/Spilt/CloneTo",
+                            "CoordinateSystem": "/coordinate_system/global",
+                            "num_children": "1",
+                            "children": [
+                                {
+                                    "name": "Spilt",
+                                    "type": "GeomSplitNode",
+                                    "CoordinateSystem": "/coordinate_system/CS_HalfSlotPitch_Positive",
+                                    "KeepPositive": "false",
+                                    "Plane": "SPILT_ZX",
+                                    "num_children": "1",
+                                    "children": [
+                                        {
+                                            "name": "CloneTo",
+                                            "type": "GeomCloneToNode",
+                                            "num_children": "0"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "SlotL_1",
+                    "type": "GeomHeadNode",
+                    "Color": "255, 170, 0, 255",
+                    "CoordinateSystem": "/coordinate_system/global",
+                    "IsHide": "false",
+                    "IsModel": "true",
+                    "IsStandAlone": "true",
+                    "Material": "/material/copper",
+                    "RequiredNumberOfElements": "0",
+                    "num_children": "1",
+                    "children": [
+                        {
+                            "name": "CloneFrom",
+                            "type": "GeomCloneFromNode",
+                            "CloneFrom": "/geometry/SlotL/Circle/Cover/Subtract/Spilt/Spilt/Spilt/CloneTo",
+                            "CoordinateSystem": "/coordinate_system/global",
+                            "num_children": "1",
+                            "children": [
+                                {
+                                    "name": "Rotate",
+                                    "type": "GeomRotateNode",
+                                    "Angle": "2*_pi/N_slots * 1",
+                                    "CoordinateSystem": "/coordinate_system/global",
+                                    "num_children": "0"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "SlotR_1",
+                    "type": "GeomHeadNode",
+                    "Color": "255, 170, 0, 255",
+                    "CoordinateSystem": "/coordinate_system/global",
+                    "IsHide": "false",
+                    "IsModel": "true",
+                    "IsStandAlone": "true",
+                    "Material": "/material/copper",
+                    "RequiredNumberOfElements": "0",
+                    "num_children": "1",
+                    "children": [
+                        {
+                            "name": "CloneFrom",
+                            "type": "GeomCloneFromNode",
+                            "CloneFrom": "/geometry/SlotR/CloneFrom/Spilt/CloneTo",
+                            "CoordinateSystem": "/coordinate_system/global",
+                            "num_children": "1",
+                            "children": [
+                                {
+                                    "name": "Rotate",
+                                    "type": "GeomRotateNode",
+                                    "Angle": "2*_pi/N_slots * 1",
+                                    "CoordinateSystem": "/coordinate_system/global",
+                                    "num_children": "0"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "SlotL_2",
+                    "type": "GeomHeadNode",
+                    "Color": "255, 170, 0, 255",
+                    "CoordinateSystem": "/coordinate_system/global",
+                    "IsHide": "false",
+                    "IsModel": "true",
+                    "IsStandAlone": "true",
+                    "Material": "/material/copper",
+                    "RequiredNumberOfElements": "0",
+                    "num_children": "1",
+                    "children": [
+                        {
+                            "name": "CloneFrom",
+                            "type": "GeomCloneFromNode",
+                            "CloneFrom": "/geometry/SlotL/Circle/Cover/Subtract/Spilt/Spilt/Spilt/CloneTo",
+                            "CoordinateSystem": "/coordinate_system/global",
+                            "num_children": "1",
+                            "children": [
+                                {
+                                    "name": "Rotate",
+                                    "type": "GeomRotateNode",
+                                    "Angle": "2*_pi/N_slots * 2",
+                                    "CoordinateSystem": "/coordinate_system/global",
+                                    "num_children": "0"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "SlotR_2",
+                    "type": "GeomHeadNode",
+                    "Color": "255, 170, 0, 255",
+                    "CoordinateSystem": "/coordinate_system/global",
+                    "IsHide": "false",
+                    "IsModel": "true",
+                    "IsStandAlone": "true",
+                    "Material": "/material/copper",
+                    "RequiredNumberOfElements": "0",
+                    "num_children": "1",
+                    "children": [
+                        {
+                            "name": "CloneFrom",
+                            "type": "GeomCloneFromNode",
+                            "CloneFrom": "/geometry/SlotR/CloneFrom/Spilt/CloneTo",
+                            "CoordinateSystem": "/coordinate_system/global",
+                            "num_children": "1",
+                            "children": [
+                                {
+                                    "name": "Rotate",
+                                    "type": "GeomRotateNode",
+                                    "Angle": "2*_pi/N_slots * 2",
+                                    "CoordinateSystem": "/coordinate_system/global",
+                                    "num_children": "0"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Airgap",
+                    "type": "GeomHeadNode",
+                    "Color": "230, 230, 230, 230",
+                    "CoordinateSystem": "/coordinate_system/global",
+                    "IsHide": "false",
+                    "IsModel": "true",
+                    "IsStandAlone": "true",
+                    "Material": "/material/vaccume",
+                    "RequiredNumberOfElements": "0",
+                    "num_children": "1",
+                    "children": [
+                        {
+                            "name": "Circle",
+                            "type": "GeomCircleNode",
+                            "Center": "0,0",
+                            "Radius": "R_si",
+                            "Segments": "0",
+                            "CoordinateSystem": "/coordinate_system/global",
+                            "num_children": "1",
+                            "children": [
+                                {
+                                    "name": "Cover",
+                                    "type": "GeomCoverLineNode",
+                                    "num_children": "1",
+                                    "children": [
+                                        {
+                                            "name": "Subtract",
+                                            "type": "GeomSubtractNode",
+                                            "num_children": "2",
+                                            "children": [
+                                                {
+                                                    "name": "AirgapIn",
+                                                    "type": "GeomHeadNode",
+                                                    "Color": "230, 230, 230, 230",
+                                                    "CoordinateSystem": "/coordinate_system/global",
+                                                    "IsHide": "false",
+                                                    "IsModel": "true",
+                                                    "IsStandAlone": "false",
+                                                    "Material": "/material/vaccume",
+                                                    "RequiredNumberOfElements": "0",
+                                                    "num_children": "1",
+                                                    "children": [
+                                                        {
+                                                            "name": "Circle",
+                                                            "type": "GeomCircleNode",
+                                                            "Center": "0,0",
+                                                            "Radius": "R_ro",
+                                                            "Segments": "0",
+                                                            "CoordinateSystem": "/coordinate_system/global",
+                                                            "num_children": "1",
+                                                            "children": [
+                                                                {
+                                                                    "name": "Cover",
+                                                                    "type": "GeomCoverLineNode",
+                                                                    "num_children": "0"
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "name": "Spilt",
+                                                    "type": "GeomSplitNode",
+                                                    "CoordinateSystem": "/coordinate_system/global",
+                                                    "KeepPositive": "true",
+                                                    "Plane": "SPILT_ZX",
+                                                    "num_children": "1",
+                                                    "children": [
+                                                        {
+                                                            "name": "Spilt",
+                                                            "type": "GeomSplitNode",
+                                                            "CoordinateSystem": "/coordinate_system/CS_CutModel",
+                                                            "KeepPositive": "false",
+                                                            "Plane": "SPILT_ZX",
+                                                            "num_children": "0"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Magnet_N",
+                    "type": "GeomHeadNode",
+                    "Color": "255, 0, 0, 255",
+                    "CoordinateSystem": "/coordinate_system/global",
+                    "IsHide": "false",
+                    "IsModel": "true",
+                    "IsStandAlone": "true",
+                    "Material": "/material/MagnetN",
+                    "RequiredNumberOfElements": "0",
+                    "num_children": "1",
+                    "children": [
+                        {
+                            "name": "Circle",
+                            "type": "GeomCircleNode",
+                            "Center": "0,0",
+                            "Radius": "R_ro",
+                            "Segments": "0",
+                            "CoordinateSystem": "/coordinate_system/global",
+                            "num_children": "1",
+                            "children": [
+                                {
+                                    "name": "Cover",
+                                    "type": "GeomCoverLineNode",
+                                    "num_children": "2",
+                                    "children": [
+                                        {
+                                            "name": "CloneTo",
+                                            "type": "GeomCloneToNode",
+                                            "num_children": "0"
+                                        },
+                                        {
+                                            "name": "Subtract",
+                                            "type": "GeomSubtractNode",
+                                            "num_children": "2",
+                                            "children": [
+                                                {
+                                                    "name": "Magnet_in_1",
+                                                    "type": "GeomHeadNode",
+                                                    "Color": "230, 230, 230, 230",
+                                                    "CoordinateSystem": "/coordinate_system/global",
+                                                    "IsHide": "false",
+                                                    "IsModel": "true",
+                                                    "IsStandAlone": "false",
+                                                    "Material": "/material/35PN270",
+                                                    "RequiredNumberOfElements": "0",
+                                                    "num_children": "1",
+                                                    "children": [
+                                                        {
+                                                            "name": "CloneFrom",
+                                                            "type": "GeomCloneFromNode",
+                                                            "CloneFrom": "/geometry/Rotor/Circle/Cover/CloneTo",
+                                                            "CoordinateSystem": "/coordinate_system/global",
+                                                            "num_children": "0"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "name": "Spilt",
+                                                    "type": "GeomSplitNode",
+                                                    "CoordinateSystem": "/coordinate_system/global",
+                                                    "KeepPositive": "true",
+                                                    "Plane": "SPILT_ZX",
+                                                    "num_children": "1",
+                                                    "children": [
+                                                        {
+                                                            "name": "Spilt",
+                                                            "type": "GeomSplitNode",
+                                                            "CoordinateSystem": "/coordinate_system/CS_CutMagnet",
+                                                            "KeepPositive": "false",
+                                                            "Plane": "SPILT_ZX",
+                                                            "num_children": "1",
+                                                            "children": [
+                                                                {
+                                                                    "name": "Rotate",
+                                                                    "type": "GeomRotateNode",
+                                                                    "Angle": "_pi/N_poles * (1-Alpha_m)",
+                                                                    "CoordinateSystem": "/coordinate_system/global",
+                                                                    "num_children": "1",
+                                                                    "children": [
+                                                                        {
+                                                                            "name": "CloneTo",
+                                                                            "type": "GeomCloneToNode",
+                                                                            "num_children": "0"
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "AirRotor",
+                    "type": "GeomHeadNode",
+                    "Color": "230, 230, 230, 230",
+                    "CoordinateSystem": "/coordinate_system/global",
+                    "IsHide": "false",
+                    "IsModel": "true",
+                    "IsStandAlone": "true",
+                    "Material": "/material/vaccume",
+                    "RequiredNumberOfElements": "0",
+                    "num_children": "1",
+                    "children": [
+                        {
+                            "name": "CloneFrom",
+                            "type": "GeomCloneFromNode",
+                            "CloneFrom": "/geometry/Magnet_N/Circle/Cover/CloneTo",
+                            "CoordinateSystem": "/coordinate_system/global",
+                            "num_children": "1",
+                            "children": [
+                                {
+                                    "name": "Spilt",
+                                    "type": "GeomSplitNode",
+                                    "CoordinateSystem": "/coordinate_system/global",
+                                    "KeepPositive": "true",
+                                    "Plane": "SPILT_ZX",
+                                    "num_children": "1",
+                                    "children": [
+                                        {
+                                            "name": "Spilt",
+                                            "type": "GeomSplitNode",
+                                            "CoordinateSystem": "/coordinate_system/CS_CutModel",
+                                            "KeepPositive": "false",
+                                            "Plane": "SPILT_ZX",
+                                            "num_children": "0"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Rotor",
+                    "type": "GeomHeadNode",
+                    "Color": "230, 230, 230, 230",
+                    "CoordinateSystem": "/coordinate_system/global",
+                    "IsHide": "false",
+                    "IsModel": "true",
+                    "IsStandAlone": "true",
+                    "Material": "/material/35PN270",
+                    "RequiredNumberOfElements": "0",
+                    "num_children": "1",
+                    "children": [
+                        {
+                            "name": "Circle",
+                            "type": "GeomCircleNode",
+                            "Center": "0,0",
+                            "Radius": "R_ro-T_m",
+                            "Segments": "0",
+                            "CoordinateSystem": "/coordinate_system/global",
+                            "num_children": "1",
+                            "children": [
+                                {
+                                    "name": "Cover",
+                                    "type": "GeomCoverLineNode",
+                                    "num_children": "2",
+                                    "children": [
+                                        {
+                                            "name": "CloneTo",
+                                            "type": "GeomCloneToNode",
+                                            "num_children": "0"
+                                        },
+                                        {
+                                            "name": "Spilt",
+                                            "type": "GeomSplitNode",
+                                            "CoordinateSystem": "/coordinate_system/global",
+                                            "KeepPositive": "true",
+                                            "Plane": "SPILT_ZX",
+                                            "num_children": "1",
+                                            "children": [
+                                                {
+                                                    "name": "Spilt",
+                                                    "type": "GeomSplitNode",
+                                                    "CoordinateSystem": "/coordinate_system/CS_CutModel",
+                                                    "KeepPositive": "false",
+                                                    "Plane": "SPILT_ZX",
+                                                    "num_children": "0"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Magnet_S",
+                    "type": "GeomHeadNode",
+                    "Color": "0, 0, 255, 255",
+                    "CoordinateSystem": "/coordinate_system/global",
+                    "IsHide": "false",
+                    "IsModel": "true",
+                    "IsStandAlone": "true",
+                    "Material": "/material/MagnetS",
+                    "RequiredNumberOfElements": "0",
+                    "num_children": "1",
+                    "children": [
+                        {
+                            "name": "CloneFrom",
+                            "type": "GeomCloneFromNode",
+                            "CloneFrom": "/geometry/Magnet_N/Circle/Cover/Subtract/Spilt/Spilt/Rotate/CloneTo",
+                            "CoordinateSystem": "/coordinate_system/global",
+                            "num_children": "1",
+                            "children": [
+                                {
+                                    "name": "Rotate",
+                                    "type": "GeomRotateNode",
+                                    "Angle": "2*_pi/N_poles",
+                                    "CoordinateSystem": "/coordinate_system/global",
+                                    "num_children": "0"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Shaft",
+                    "type": "GeomHeadNode",
+                    "Color": "230, 230, 230, 230",
+                    "CoordinateSystem": "/coordinate_system/global",
+                    "IsHide": "false",
+                    "IsModel": "true",
+                    "IsStandAlone": "true",
+                    "Material": "/material/vaccume",
+                    "RequiredNumberOfElements": "0",
+                    "num_children": "1",
+                    "children": [
+                        {
+                            "name": "Circle",
+                            "type": "GeomCircleNode",
+                            "Center": "0,0",
+                            "Radius": "R_shaft",
+                            "Segments": "0",
+                            "CoordinateSystem": "/coordinate_system/global",
+                            "num_children": "1",
+                            "children": [
+                                {
+                                    "name": "Cover",
+                                    "type": "GeomCoverLineNode",
+                                    "num_children": "1",
+                                    "children": [
+                                        {
+                                            "name": "Spilt",
+                                            "type": "GeomSplitNode",
+                                            "CoordinateSystem": "/coordinate_system/global",
+                                            "KeepPositive": "true",
+                                            "Plane": "SPILT_ZX",
+                                            "num_children": "1",
+                                            "children": [
+                                                {
+                                                    "name": "Spilt",
+                                                    "type": "GeomSplitNode",
+                                                    "CoordinateSystem": "/coordinate_system/CS_CutModel",
+                                                    "KeepPositive": "false",
+                                                    "Plane": "SPILT_ZX",
+                                                    "num_children": "0"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "StatorExt",
+                    "type": "GeomHeadNode",
+                    "Color": "230, 230, 230, 230",
+                    "CoordinateSystem": "/coordinate_system/global",
+                    "IsHide": "false",
+                    "IsModel": "true",
+                    "IsStandAlone": "true",
+                    "Material": "/material/vaccume",
+                    "RequiredNumberOfElements": "0",
+                    "num_children": "1",
+                    "children": [
+                        {
+                            "name": "Curve",
+                            "type": "GeomCurveNode",
+                            "CenterPoint": "0,0",
+                            "EndPoint": "0, R_so * 1.25",
+                            "Radius": "R_so * 1.25",
+                            "StartPoint": "R_so * 1.25, 0",
+                            "CoordinateSystem": "/coordinate_system/global",
+                            "num_children": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Master",
+                    "type": "GeomHeadNode",
+                    "Color": "230, 230, 230, 230",
+                    "CoordinateSystem": "/coordinate_system/global",
+                    "IsHide": "false",
+                    "IsModel": "true",
+                    "IsStandAlone": "true",
+                    "Material": "/material/vaccume",
+                    "RequiredNumberOfElements": "0",
+                    "num_children": "1",
+                    "children": [
+                        {
+                            "name": "Curve",
+                            "type": "GeomLineNode",
+                            "EndPoint": "R_so * 1.25,0",
+                            "StartPoint": "0,0",
+                            "CoordinateSystem": "/coordinate_system/global",
+                            "num_children": "1",
+                            "children": [
+                                {
+                                    "name": "CloneTo",
+                                    "type": "GeomCloneToNode",
+                                    "num_children": "0"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Slave",
+                    "type": "GeomHeadNode",
+                    "Color": "230, 230, 230, 230",
+                    "CoordinateSystem": "/coordinate_system/global",
+                    "IsHide": "false",
+                    "IsModel": "true",
+                    "IsStandAlone": "true",
+                    "Material": "/material/vaccume",
+                    "RequiredNumberOfElements": "0",
+                    "num_children": "1",
+                    "children": [
+                        {
+                            "name": "CloneFrom",
+                            "type": "GeomCloneFromNode",
+                            "CloneFrom": "/geometry/Master/Curve/CloneTo",
+                            "CoordinateSystem": "/coordinate_system/global",
+                            "num_children": "1",
+                            "children": [
+                                {
+                                    "name": "Rotate",
+                                    "type": "GeomRotateNode",
+                                    "Angle": "2*_pi/4",
+                                    "CoordinateSystem": "/coordinate_system/global",
+                                    "num_children": "0"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        "coordinate_system": {
+            "children": [
+                {
+                    "name": "global",
+                    "type": "CSNode",
+                    "Angle": "0",
+                    "Origin": "0,0",
+                    "num_children": "0"
+                },
+                {
+                    "name": "CS_ShoeCut",
+                    "type": "CSNode",
+                    "Angle": "0",
+                    "Origin": "R_si1 * cos(Theta_shoe1), R_si1 * sin(Theta_shoe1)",
+                    "num_children": "0"
+                },
+                {
+                    "name": "CS_HalfSlotPitch_Positive",
+                    "type": "CSNode",
+                    "Angle": "_pi/N_slots",
+                    "Origin": "0,0",
+                    "num_children": "1",
+                    "children": [
+                        {
+                            "name": "CS_CutShoeP",
+                            "type": "CSNode",
+                            "Angle": "0",
+                            "Origin": "0,-W_so/2",
+                            "num_children": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "CS_HalfSlotPitch_Negative",
+                    "type": "CSNode",
+                    "Angle": "-_pi/N_slots",
+                    "Origin": "0,0",
+                    "num_children": "1",
+                    "children": [
+                        {
+                            "name": "CS_CutShoeN",
+                            "type": "CSNode",
+                            "Angle": "0",
+                            "Origin": "0,W_so/2",
+                            "num_children": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "CS_CutSlotLBase",
+                    "type": "CSNode",
+                    "Angle": "2*_pi/N_slots",
+                    "Origin": "0,0",
+                    "num_children": "1",
+                    "children": [
+                        {
+                            "name": "CS_CutSlotL",
+                            "type": "CSNode",
+                            "Angle": "0",
+                            "Origin": "0,-W_t/2",
+                            "num_children": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "CS_CutSlotR",
+                    "type": "CSNode",
+                    "Angle": "0",
+                    "Origin": "0,W_t/2",
+                    "num_children": "0"
+                },
+                {
+                    "name": "CS_CutMagnet",
+                    "type": "CSNode",
+                    "Angle": "2*_pi/N_poles * Alpha_m",
+                    "Origin": "0,0",
+                    "num_children": "0"
+                },
+                {
+                    "name": "CS_CutModel",
+                    "type": "CSNode",
+                    "Angle": "2*_pi/4",
+                    "Origin": "0,0",
+                    "num_children": "0"
+                }
+            ]
+        },
+        "material": {
+            "children": [
+                {
+                    "name": "vaccume",
+                    "type": "MaterialNode",
+                    "Conductivity": "0",
+                    "DirectionOfMagentization": "0, 0",
+                    "Magnetization": "0",
+                    "Permeability": "1",
+                    "num_children": "0"
+                },
+                {
+                    "name": "35PN270",
+                    "type": "MaterialNode",
+                    "Conductivity": "0",
+                    "DirectionOfMagentization": "0, 0",
+                    "Magnetization": "0",
+                    "Permeability": "1000",
+                    "num_children": "1",
+                    "children": [
+                        {
+                            "name": "bh_curve",
+                            "type": "DataSetNode",
+                            "Dataset": "0 0; 6.15 0.05; 12.3 0.1; 18.4 0.15; 24.6 0.2; 30.7 0.25; 36.9 0.3; 43 0.35; 49.2 0.4; 55.3 0.45; 61.5 0.5; 67.7 0.55; 73.8 0.6; 80 0.65; 86.2 0.7; 92.5 0.75; 98.7 0.8; 105 0.85; 112 0.9; 118 0.95; 125 1; 132 1.05; 140 1.1; 148 1.15; 159 1.2; 171 1.25; 189 1.3; 214 1.35; 252 1.4; 315 1.45; 422 1.5; 609 1.55; 947 1.6; 1570 1.65; 2740 1.7; 4990 1.75; 9360 1.8; 18000 1.85; 35500 1.9; 71300 1.95; 146000 2; 304000 2.05; 644000 2.1; 1.39e+06 2.15; 3.04e+06 2.2; 6.78e+06 2.25; 1.54e+07 2.3; 3.55e+07 2.35; 8.33e+07 2.4",
+                            "num_children": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "copper",
+                    "type": "MaterialNode",
+                    "Conductivity": "5.08 * 1e7",
+                    "DirectionOfMagentization": "0, 0",
+                    "Magnetization": "0",
+                    "Permeability": "0.95",
+                    "num_children": "0"
+                },
+                {
+                    "name": "MagnetN",
+                    "type": "MaterialNode",
+                    "Conductivity": "0",
+                    "DirectionOfMagentization": "cos(atan2($Y,$X)), sin(atan2($Y,$X))",
+                    "Magnetization": "1.25",
+                    "Permeability": "1.05",
+                    "num_children": "0"
+                },
+                {
+                    "name": "MagnetS",
+                    "type": "MaterialNode",
+                    "Conductivity": "0",
+                    "DirectionOfMagentization": "cos(atan2($Y,$X)), sin(atan2($Y,$X))",
+                    "Magnetization": "-1.25",
+                    "Permeability": "1.05",
+                    "num_children": "0"
+                }
+            ]
+        },
+        "boundary_condition": {
+            "children": [
+                {
+                    "name": "ZeroPotential",
+                    "type": "DirichletBCNode",
+                    "Value": "0",
+                    "num_children": "1",
+                    "children": [
+                        {
+                            "name": "Fixed1",
+                            "type": "GeomHeadRefNode",
+                            "HeadNode": "/geometry/StatorExt",
+                            "num_children": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Master",
+                    "type": "MasterPeriodicBCNode",
+                    "Direction": "true",
+                    "num_children": "1",
+                    "children": [
+                        {
+                            "name": "Master",
+                            "type": "GeomHeadRefNode",
+                            "HeadNode": "/geometry/Master",
+                            "num_children": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Slave",
+                    "type": "SlavePeriodicBCNode",
+                    "EvenPeriodic": "true",
+                    "Master": "/boundary_condition/Master",
+                    "Direction": "true",
+                    "num_children": "1",
+                    "children": [
+                        {
+                            "name": "Slave",
+                            "type": "GeomHeadRefNode",
+                            "HeadNode": "/geometry/Slave",
+                            "num_children": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "MovingBand",
+                    "type": "MovingBandNode",
+                    "InitialPosition": "0",
+                    "Speed": "RotatingSpeed",
+                    "num_children": "1",
+                    "children": [
+                        {
+                            "name": "Band",
+                            "type": "GeomHeadRefNode",
+                            "HeadNode": "/geometry/Airgap",
+                            "num_children": "0"
+                        }
+                    ]
+                }
+            ]
+        },
+        "excitation": {
+            "children": [
+                {
+                    "name": "PhaseA",
+                    "type": "WindingNode",
+                    "Current": "I_a*cos(omega*$TIME + beta)",
+                    "ParallelBranches": "1",
+                    "num_children": "2",
+                    "children": [
+                        {
+                            "name": "PhaseA+",
+                            "type": "CoilNode",
+                            "Direction": "true",
+                            "ReferenceHead": "/geometry/SlotL_2",
+                            "Turns": "N_c",
+                            "num_children": "0"
+                        },
+                        {
+                            "name": "PhaseA-",
+                            "type": "CoilNode",
+                            "Direction": "false",
+                            "ReferenceHead": "/geometry/SlotR",
+                            "Turns": "N_c",
+                            "num_children": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "PhaseB",
+                    "type": "WindingNode",
+                    "Current": "I_a*cos(omega*$TIME + beta - 2*_pi/3)",
+                    "ParallelBranches": "1",
+                    "num_children": "2",
+                    "children": [
+                        {
+                            "name": "PhaseB+",
+                            "type": "CoilNode",
+                            "Direction": "true",
+                            "ReferenceHead": "/geometry/SlotL",
+                            "Turns": "N_c",
+                            "num_children": "0"
+                        },
+                        {
+                            "name": "PhaseB-",
+                            "type": "CoilNode",
+                            "Direction": "false",
+                            "ReferenceHead": "/geometry/SlotR_1",
+                            "Turns": "N_c",
+                            "num_children": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "PhaseC",
+                    "type": "WindingNode",
+                    "Current": "I_a*cos(omega*$TIME + beta + 2*_pi/3)",
+                    "ParallelBranches": "1",
+                    "num_children": "2",
+                    "children": [
+                        {
+                            "name": "PhaseC+",
+                            "type": "CoilNode",
+                            "Direction": "true",
+                            "ReferenceHead": "/geometry/SlotL_1",
+                            "Turns": "N_c",
+                            "num_children": "0"
+                        },
+                        {
+                            "name": "PhaseC-",
+                            "type": "CoilNode",
+                            "Direction": "false",
+                            "ReferenceHead": "/geometry/SlotR_2",
+                            "Turns": "N_c",
+                            "num_children": "0"
+                        }
+                    ]
+                }
+            ]
+        },
+        "setup": {
+            "children": [
+                {
+                    "name": "default",
+                    "type": "SolutionSetup",
+                    "Max_Iteration": "20",
+                    "Symmetry_Factor": "1",
+                    "Tolerance_Absolute": "1e-06",
+                    "Tolerance_Relative": "1e-06",
+                    "z_Length": "1",
+                    "num_children": "1",
+                    "children": [
+                        {
+                            "name": "Transient",
+                            "type": "Transient",
+                            "StopTime": "1/f_e",
+                            "TimeStep": "1/f_e/90",
+                            "num_children": "0"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

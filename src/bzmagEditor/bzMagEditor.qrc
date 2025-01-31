@@ -1,0 +1,22 @@
+<RCC>
+    <qresource prefix="/bzmagEdior">
+        <file>images/W_icon.png</file>
+        <file>icons/bzmag_icon.webp</file>
+        <file>icons/bzmag_icon.png</file>
+    </qresource>
+    <qresource prefix="/">
+        <file>icons/DrawArc.png</file>
+        <file>icons/DrawCircle.png</file>
+        <file>icons/DrawLine.png</file>
+        <file>icons/DrawRectangle.png</file>
+        <file>icons/Difference.png</file>
+        <file>icons/Intersect.png</file>
+        <file>icons/Move.png</file>
+        <file>icons/Rotate.png</file>
+        <file>icons/Unite.png</file>
+        <file>icons/Clone.png</file>
+        <file>icons/Spilt.png</file>
+        <file>icons/CS.png</file>
+        <file>icons/bzmag_icon.ico</file>
+    </qresource>
+</RCC>

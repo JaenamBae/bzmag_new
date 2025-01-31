@@ -1,0 +1,581 @@
+{
+  "file_type": "bzmag",
+  "version": 1.0,
+  "template": null,
+  "expression": {
+    "children": [
+      {
+        "Comment": "Airmodel Width",
+        "Expression": "Core_Width+2*WiningWidth",
+        "IsHidden": "false",
+        "IsUserDefined": "true",
+        "Key": "AirModel_Width"
+      },
+      {
+        "Comment": "Winding Width",
+        "Expression": "1",
+        "IsHidden": "false",
+        "IsUserDefined": "true",
+        "Key": "AirgapWidth"
+      },
+      {
+        "Comment": "Transformer Core Height (based on Outbounded)",
+        "Expression": "20",
+        "IsHidden": "false",
+        "IsUserDefined": "true",
+        "Key": "Core_Height"
+      },
+      {
+        "Comment": "Transformer Core Width (based on Outbounded)",
+        "Expression": "25",
+        "IsHidden": "false",
+        "IsUserDefined": "true",
+        "Key": "Core_Width"
+      },
+      {
+        "Comment": "Applied Current of Primary Winding",
+        "Expression": "20",
+        "IsHidden": "false",
+        "IsUserDefined": "true",
+        "Key": "I_a"
+      },
+      {
+        "Comment": "Number of Turns for the Primary Winding",
+        "Expression": "10",
+        "IsHidden": "false",
+        "IsUserDefined": "true",
+        "Key": "N_c1"
+      },
+      {
+        "Comment": "Number of Turns for the Secondary Winding",
+        "Expression": "20",
+        "IsHidden": "false",
+        "IsUserDefined": "true",
+        "Key": "N_c2"
+      },
+      {
+        "Comment": "Transformer Core Band Width",
+        "Expression": "5",
+        "IsHidden": "false",
+        "IsUserDefined": "true",
+        "Key": "Path_Width"
+      },
+      {
+        "Comment": "Window Height",
+        "Expression": "Core_Height-2*Path_Width",
+        "IsHidden": "false",
+        "IsUserDefined": "true",
+        "Key": "Window_Height"
+      },
+      {
+        "Comment": "Window Width",
+        "Expression": "Core_Width-2*Path_Width",
+        "IsHidden": "false",
+        "IsUserDefined": "true",
+        "Key": "Window_Width"
+      },
+      {
+        "Comment": "Winding Width",
+        "Expression": "5",
+        "IsHidden": "false",
+        "IsUserDefined": "true",
+        "Key": "WiningWidth"
+      }
+    ]
+  },
+  "geometry": {
+    "children": [
+      {
+        "name": "Core",
+        "type": "GeomHeadNode",
+        "Color": "230, 230, 230, 230",
+        "CoordinateSystem": "/coordinate_system/global",
+        "IsHide": "false",
+        "IsModel": "true",
+        "IsStandAlone": "true",
+        "Material": "/material/35PN270",
+        "RequiredNumberOfElements": "0",
+        "num_children": "1",
+        "children": [
+          {
+            "name": "Rectangle",
+            "type": "GeomRectNode",
+            "Height": "Core_Height",
+            "Point": "-Core_Width/2, -Core_Height/2",
+            "Width": "Core_Width",
+            "CoordinateSystem": "/coordinate_system/global",
+            "num_children": "1",
+            "children": [
+              {
+                "name": "Cover",
+                "type": "GeomCoverLineNode",
+                "num_children": "1",
+                "children": [
+                  {
+                    "name": "Subtract",
+                    "type": "GeomSubtractNode",
+                    "num_children": "2",
+                    "children": [
+                      {
+                        "name": "Core_in",
+                        "type": "GeomHeadNode",
+                        "Color": "230, 230, 230, 230",
+                        "CoordinateSystem": "/coordinate_system/global",
+                        "IsHide": "false",
+                        "IsModel": "true",
+                        "IsStandAlone": "false",
+                        "Material": "/material/vaccume",
+                        "RequiredNumberOfElements": "0",
+                        "num_children": "1",
+                        "children": [
+                          {
+                            "name": "Rectangle",
+                            "type": "GeomRectNode",
+                            "Height": "Window_Height",
+                            "Point": "-Window_Width/2, -Window_Height/2",
+                            "Width": "Window_Width",
+                            "CoordinateSystem": "/coordinate_system/global",
+                            "num_children": "1",
+                            "children": [
+                              {
+                                "name": "Cover",
+                                "type": "GeomCoverLineNode",
+                                "num_children": "0"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "name": "Airgap",
+                        "type": "GeomHeadNode",
+                        "Color": "230, 230, 230, 230",
+                        "CoordinateSystem": "/coordinate_system/global",
+                        "IsHide": "false",
+                        "IsModel": "true",
+                        "IsStandAlone": "false",
+                        "Material": "/material/vaccume",
+                        "RequiredNumberOfElements": "0",
+                        "num_children": "1",
+                        "children": [
+                          {
+                            "name": "Rectangle",
+                            "type": "GeomRectNode",
+                            "Height": "Core_Height",
+                            "Point": "-AirgapWidth/2, 0",
+                            "Width": "AirgapWidth",
+                            "CoordinateSystem": "/coordinate_system/global",
+                            "num_children": "1",
+                            "children": [
+                              {
+                                "name": "Cover",
+                                "type": "GeomCoverLineNode",
+                                "num_children": "0"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "PrimaryWining(Left)",
+        "type": "GeomHeadNode",
+        "Color": "255, 170, 0, 230",
+        "CoordinateSystem": "/coordinate_system/global",
+        "IsHide": "false",
+        "IsModel": "true",
+        "IsStandAlone": "true",
+        "Material": "/material/copper",
+        "RequiredNumberOfElements": "0",
+        "num_children": "1",
+        "children": [
+          {
+            "name": "Rectangle",
+            "type": "GeomRectNode",
+            "Height": "Window_Height",
+            "Point": "-Core_Width/2, -Window_Height/2",
+            "Width": "-WiningWidth",
+            "CoordinateSystem": "/coordinate_system/global",
+            "num_children": "1",
+            "children": [
+              {
+                "name": "Cover",
+                "type": "GeomCoverLineNode",
+                "num_children": "0"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "PrimaryWining(Right)",
+        "type": "GeomHeadNode",
+        "Color": "255, 170, 127, 230",
+        "CoordinateSystem": "/coordinate_system/global",
+        "IsHide": "false",
+        "IsModel": "true",
+        "IsStandAlone": "true",
+        "Material": "/material/copper",
+        "RequiredNumberOfElements": "0",
+        "num_children": "1",
+        "children": [
+          {
+            "name": "Rectangle",
+            "type": "GeomRectNode",
+            "Height": "Window_Height",
+            "Point": "-Window_Width/2, -Window_Height/2",
+            "Width": "WiningWidth",
+            "CoordinateSystem": "/coordinate_system/global",
+            "num_children": "1",
+            "children": [
+              {
+                "name": "Cover",
+                "type": "GeomCoverLineNode",
+                "num_children": "0"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "SecondaryWining(Right)",
+        "type": "GeomHeadNode",
+        "Color": "170, 170, 127, 230",
+        "CoordinateSystem": "/coordinate_system/global",
+        "IsHide": "false",
+        "IsModel": "true",
+        "IsStandAlone": "true",
+        "Material": "/material/copper",
+        "RequiredNumberOfElements": "0",
+        "num_children": "1",
+        "children": [
+          {
+            "name": "Rectangle",
+            "type": "GeomRectNode",
+            "Height": "Window_Height",
+            "Point": "Core_Width/2, -Window_Height/2",
+            "Width": "WiningWidth",
+            "CoordinateSystem": "/coordinate_system/global",
+            "num_children": "1",
+            "children": [
+              {
+                "name": "Cover",
+                "type": "GeomCoverLineNode",
+                "num_children": "0"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "SecondaryWining(Left)",
+        "type": "GeomHeadNode",
+        "Color": "170, 170, 0, 230",
+        "CoordinateSystem": "/coordinate_system/global",
+        "IsHide": "false",
+        "IsModel": "true",
+        "IsStandAlone": "true",
+        "Material": "/material/copper",
+        "RequiredNumberOfElements": "0",
+        "num_children": "1",
+        "children": [
+          {
+            "name": "Rectangle",
+            "type": "GeomRectNode",
+            "Height": "Window_Height",
+            "Point": "Window_Width/2, -Window_Height/2",
+            "Width": "-WiningWidth",
+            "CoordinateSystem": "/coordinate_system/global",
+            "num_children": "1",
+            "children": [
+              {
+                "name": "Cover",
+                "type": "GeomCoverLineNode",
+                "num_children": "0"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "AirModel",
+        "type": "GeomHeadNode",
+        "Color": "255, 255, 255, 0",
+        "CoordinateSystem": "/coordinate_system/global",
+        "IsHide": "false",
+        "IsModel": "true",
+        "IsStandAlone": "true",
+        "Material": "/material/vaccume",
+        "RequiredNumberOfElements": "0",
+        "num_children": "1",
+        "children": [
+          {
+            "name": "Rectangle",
+            "type": "GeomRectNode",
+            "Height": "Core_Height * 1.2",
+            "Point": "-AirModel_Width/2 * 1.2, -Core_Height/2 * 1.2",
+            "Width": "AirModel_Width * 1.2",
+            "CoordinateSystem": "/coordinate_system/global",
+            "num_children": "1",
+            "children": [
+              {
+                "name": "Cover",
+                "type": "GeomCoverLineNode",
+                "num_children": "0"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Boundary_Bottom",
+        "type": "GeomHeadNode",
+        "Color": "230, 230, 230, 230",
+        "CoordinateSystem": "/coordinate_system/global",
+        "IsHide": "false",
+        "IsModel": "true",
+        "IsStandAlone": "true",
+        "Material": "/material/vaccume",
+        "RequiredNumberOfElements": "0",
+        "num_children": "1",
+        "children": [
+          {
+            "name": "Curve",
+            "type": "GeomLineNode",
+            "EndPoint": "AirModel_Width/2 * 1.2, -Core_Height/2 * 1.2",
+            "StartPoint": "-AirModel_Width/2 * 1.2, -Core_Height/2 * 1.2",
+            "CoordinateSystem": "/coordinate_system/global",
+            "num_children": "0"
+          }
+        ]
+      },
+      {
+        "name": "Boundary_Right",
+        "type": "GeomHeadNode",
+        "Color": "230, 230, 230, 230",
+        "CoordinateSystem": "/coordinate_system/global",
+        "IsHide": "false",
+        "IsModel": "true",
+        "IsStandAlone": "true",
+        "Material": "/material/vaccume",
+        "RequiredNumberOfElements": "0",
+        "num_children": "1",
+        "children": [
+          {
+            "name": "Curve",
+            "type": "GeomLineNode",
+            "EndPoint": "AirModel_Width/2 * 1.2, Core_Height/2 * 1.2",
+            "StartPoint": "AirModel_Width/2 * 1.2, -Core_Height/2 * 1.2",
+            "CoordinateSystem": "/coordinate_system/global",
+            "num_children": "0"
+          }
+        ]
+      },
+      {
+        "name": "Boundary_Top",
+        "type": "GeomHeadNode",
+        "Color": "230, 230, 230, 230",
+        "CoordinateSystem": "/coordinate_system/global",
+        "IsHide": "false",
+        "IsModel": "true",
+        "IsStandAlone": "true",
+        "Material": "/material/vaccume",
+        "RequiredNumberOfElements": "0",
+        "num_children": "1",
+        "children": [
+          {
+            "name": "Curve",
+            "type": "GeomLineNode",
+            "EndPoint": "-AirModel_Width/2 * 1.2, Core_Height/2 * 1.2",
+            "StartPoint": "AirModel_Width/2 * 1.2, Core_Height/2 * 1.2",
+            "CoordinateSystem": "/coordinate_system/global",
+            "num_children": "0"
+          }
+        ]
+      },
+      {
+        "name": "Boundary_Left",
+        "type": "GeomHeadNode",
+        "Color": "230, 230, 230, 230",
+        "CoordinateSystem": "/coordinate_system/global",
+        "IsHide": "false",
+        "IsModel": "true",
+        "IsStandAlone": "true",
+        "Material": "/material/vaccume",
+        "RequiredNumberOfElements": "0",
+        "num_children": "1",
+        "children": [
+          {
+            "name": "Curve",
+            "type": "GeomLineNode",
+            "EndPoint": "-AirModel_Width/2 * 1.2, -Core_Height/2 * 1.2",
+            "StartPoint": "-AirModel_Width/2 * 1.2, Core_Height/2 * 1.2",
+            "CoordinateSystem": "/coordinate_system/global",
+            "num_children": "0"
+          }
+        ]
+      }
+    ]
+  },
+  "coordinate_system": {
+    "children": [
+      {
+        "name": "global",
+        "type": "CSNode",
+        "Angle": "0",
+        "Origin": "0,0",
+        "num_children": "0"
+      }
+    ]
+  },
+  "material": {
+    "children": [
+      {
+        "name": "vaccume",
+        "type": "MaterialNode",
+        "Conductivity": "0",
+        "DirectionOfMagentization": "0, 0",
+        "Magnetization": "0",
+        "Permeability": "1",
+        "num_children": "0"
+      },
+      {
+        "name": "35PN270",
+        "type": "MaterialNode",
+        "Conductivity": "0",
+        "DirectionOfMagentization": "0, 0",
+        "Magnetization": "0",
+        "Permeability": "1000",
+        "num_children": "1",
+        "children": [
+          {
+            "name": "bh_curve",
+            "type": "DataSetNode",
+            "Dataset": "0 0; 6.15 0.05; 12.3 0.1; 18.4 0.15; 24.6 0.2; 30.7 0.25; 36.9 0.3; 43 0.35; 49.2 0.4; 55.3 0.45; 61.5 0.5; 67.7 0.55; 73.8 0.6; 80 0.65; 86.2 0.7; 92.5 0.75; 98.7 0.8; 105 0.85; 112 0.9; 118 0.95; 125 1; 132 1.05; 140 1.1; 148 1.15; 159 1.2; 171 1.25; 189 1.3; 214 1.35; 252 1.4; 315 1.45; 422 1.5; 609 1.55; 947 1.6; 1570 1.65; 2740 1.7; 4990 1.75; 9360 1.8; 18000 1.85; 35500 1.9; 71300 1.95; 146000 2; 304000 2.05; 644000 2.1; 1.39e+06 2.15; 3.04e+06 2.2; 6.78e+06 2.25; 1.54e+07 2.3; 3.55e+07 2.35; 8.33e+07 2.4",
+            "num_children": "0"
+          }
+        ]
+      },
+      {
+        "name": "copper",
+        "type": "MaterialNode",
+        "Conductivity": "5.08*1e7",
+        "DirectionOfMagentization": "0, 0",
+        "Magnetization": "0",
+        "Permeability": "0.95",
+        "num_children": "0"
+      }
+    ]
+  },
+  "boundary_condition": {
+    "children": [
+      {
+        "name": "ZeroPotential",
+        "type": "DirichletBCNode",
+        "Value": "0",
+        "num_children": "4",
+        "children": [
+          {
+            "name": "Fixed1",
+            "type": "GeomHeadRefNode",
+            "HeadNode": "/geometry/Boundary_Bottom",
+            "num_children": "0"
+          },
+          {
+            "name": "Fixed2",
+            "type": "GeomHeadRefNode",
+            "HeadNode": "/geometry/Boundary_Right",
+            "num_children": "0"
+          },
+          {
+            "name": "Fixed3",
+            "type": "GeomHeadRefNode",
+            "HeadNode": "/geometry/Boundary_Top",
+            "num_children": "0"
+          },
+          {
+            "name": "Fixed4",
+            "type": "GeomHeadRefNode",
+            "HeadNode": "/geometry/Boundary_Left",
+            "num_children": "0"
+          }
+        ]
+      }
+    ]
+  },
+  "excitation": {
+    "children": [
+      {
+        "name": "PrimaryWinding",
+        "type": "WindingNode",
+        "Current": "I_a",
+        "ParallelBranches": "1",
+        "num_children": "2",
+        "children": [
+          {
+            "name": "Primary+",
+            "type": "CoilNode",
+            "Direction": "true",
+            "ReferenceHead": "/geometry/PrimaryWining(Left)",
+            "Turns": "N_c1",
+            "num_children": "0"
+          },
+          {
+            "name": "Primary-",
+            "type": "CoilNode",
+            "Direction": "false",
+            "ReferenceHead": "/geometry/PrimaryWining(Right)",
+            "Turns": "N_c1",
+            "num_children": "0"
+          }
+        ]
+      },
+      {
+        "name": "SecondaryWinding",
+        "type": "WindingNode",
+        "Current": "0",
+        "ParallelBranches": "1",
+        "num_children": "2",
+        "children": [
+          {
+            "name": "Secondary+",
+            "type": "CoilNode",
+            "Direction": "true",
+            "ReferenceHead": "/geometry/SecondaryWining(Left)",
+            "Turns": "N_c2",
+            "num_children": "0"
+          },
+          {
+            "name": "Secondary-",
+            "type": "CoilNode",
+            "Direction": "false",
+            "ReferenceHead": "/geometry/SecondaryWining(Right)",
+            "Turns": "N_c2",
+            "num_children": "0"
+          }
+        ]
+      }
+    ]
+  },
+  "setup": {
+    "children": [
+      {
+        "name": "default",
+        "type": "SolutionSetup",
+        "Max_Iteration": "20",
+        "Symmetry_Factor": "1",
+        "Tolerance_Absolute": "1e-06",
+        "Tolerance_Relative": "1e-06",
+        "z_Length": "1",
+        "num_children": "0"
+      }
+    ]
+  }
+}
