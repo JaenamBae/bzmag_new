@@ -1,5 +1,4 @@
 Libraries Used for the Build
-
 - CGAL 5.6.1
 - Boost 1.87
 - iconv
@@ -11,12 +10,10 @@ Libraries Used for the Build
 - qtpropertybrowser
   --> https://github.com/bazhenovc/QtPropertyBrowser (for qt5)
   --> https://github.com/AubrCool/qtpropertybrowser (for qt6)
-
 - exprtk
   --> https://github.com/ArashPartow/exprtk
 
-
-Built in the MSYS2 (Windows) environment using the following commands:
+Built in the MSYS2 (Windows) / VS2022 environment using the following commands:
 rm -rf build
 mkdir build
 cd build
@@ -35,3 +32,9 @@ for dll in $(ldd bzmagEditor.exe | grep '=>' | awk '{print $3}'); do cp $dll ./p
 DLL required for UI styles
 The following DLL must be placed in the styles directory under the executable directory:
 styles\qwindowsvistastyle.dll
+
+gmsh / getdp are required:
+https://getdp.info/
+https://gmsh.info/
+Gmsh and GetDP must be placed in the same location as the executable file.
+
